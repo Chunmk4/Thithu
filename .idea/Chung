@@ -1,0 +1,194 @@
+import java.io.*;
+import java.util.ArrayList;
+
+class Computer {
+  private String code;
+  private String name;
+  private String manufacturer;
+  private String configuration;
+  private double price;
+  private boolean status;
+
+  public Computer() {}
+
+  public Computer(String code, String name, String manufacturer, String configuration, double price, boolean status) {
+    this.code = code;
+    this.name = name;
+    this.manufacturer = manufacturer;
+    this.configuration = configuration;
+    this.price = price;
+    this.status = status;
+  }
+
+  public String getCode() {
+    return code;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getManufacturer() {
+    return manufacturer;
+  }
+
+  public void setManufacturer(String manufacturer) {
+    this.manufacturer = manufacturer;
+  }
+
+  public String getConfiguration() {
+    return configuration;
+  }
+
+  public void setConfiguration(String configuration) {
+    this.configuration = configuration;
+  }
+
+  public double getPrice() {
+    return price;
+  }
+
+  public void setPrice(double price) {
+    this.price = price;
+  }
+
+  public boolean isStatus() {
+    return status;
+  }
+
+  public void setStatus(boolean status) {
+    this.status = status;
+  }
+}
+
+class AppComputer {
+  private static final String FILE_NAME = "database.txt";
+  private static ArrayList<Computer> computerList = new ArrayList<Computer>();
+
+  public static void main(String[] args) {
+    // tạo file database.txt
+    createFile();
+
+    // tạo danh sách các máy tính
+    Computer computer1 = new Computer("PC001", "Desktop HP", "HP", "Core i5, 8GB RAM, 1TB HDD", 15000000, true);
+    Computer computer2 = new Computer("PC002", "Laptop Dell", "Dell", "Core i7, 16GB RAM, 512GB SSD", 25000000, true);
+    Computer computer3 = new Computer("PC003", "Laptop Asus", "Asus", "Core i5, 8GB RAM, 512GB SSD", 18000000, false);
+    Computer computer4 = new Computer("PC004", "Macbook Pro", "Apple", "M1, 16GB RAM, 1TB SSD", 50000000, true);
+    Computer computer5 = new Computer("PC005", "Surface Book", "Microsoft", "Core i7, 16GB RAM, 1TB SSD", 30000000, false);
+
+    // lưu từng đối tượng vào file database.txt
+    addComputerToFile(computer1);
+    addComputerToFile(computer2);
+    addComputerToFile(computer3);
+    addComputerToFile(computer4);
+    addComputerToFile(computer5);
+
+    // hiển thị tất cả thông tin của file database.txt
+    System.out.println("Danh sách máy tính trong file:");
+    ArrayList<Computer> computers = getAllComputerFromFile();
+    for (Computer computer : computers) {
+      System.out.println("Mã: " + computer.getCode() + ", Tên: " + computer.getName() + ", Hãng: " + computer.getManufacturer() + ", Cấu hình: " + computer.getConfiguration() + ", Giá: " + computer.getPrice() + ", Trạng thái: " + (computer.isStatus() ? "Còn hàng" : "Hết hàng"));
+    }
+
+    // lưu từng đối tượng vào mảng danh sách máy tính
+    addComputerToArray(computer1);
+    addComputerToArray(computer2);
+    addComputerToArray(computer3);
+    addComputerToArray(computer4);
+    addComputerToArray(computer5);
+
+    // lưu mảng danh sách máy tính vào file database.txt
+    addComputersToFile();
+
+    // hiển thị tất cả thông tin của file database.txt
+    System.out.println("Danh sách máy tính trong file:");
+     computers.clear();
+     computers = getAllComputerFromFile();
+    for (Computer computer : computers) {
+      System.out.println("Mã: " + computer.getCode() + ", Tên: " + computer.getName() + ", Hãng: " + computer.getManufacturer() + ", Cấu hình: " + computer.getConfiguration() + ", Giá: " + computer.getPrice() + ", Trạng thái: " + (computer.isStatus() ? "Còn hàng" : "Hết hàng"));
+    }
+  }
+
+  // phương thức tạo file database.txt
+  public static void createFile() {
+    try {
+      File myObj = new File(FILE_NAME);
+      if (myObj.createNewFile()) {
+        System.out.println("Đã tạo file: " + myObj.getName());
+      } else {
+        System.out.println("File đã tồn tại.");
+      }
+    } catch (IOException e) {
+      System.out.println("Lỗi tạo file.");
+      e.printStackTrace();
+    }
+  }
+
+  // phương thức thêm 1 máy tính vào file
+  public static void addComputerToFile(Computer computer) {
+    try {
+      FileWriter myWriter = new FileWriter(FILE_NAME, true);
+      myWriter.write(computer.getCode() + "," + computer.getName() + "," + computer.getManufacturer() + "," + computer.getConfiguration() + "," + computer.getPrice() + "," + computer.isStatus() + "\n");
+      myWriter.close();
+      System.out.println("Đã lưu máy tính vào file: " + FILE_NAME);
+    } catch (IOException e) {
+      System.out.println("Lỗi lưu file.");
+      e.printStackTrace();
+    }
+  }
+
+  // phương thức trả về thông tin của 1 file
+  public static ArrayList<Computer> getDataFromFile(File file) {
+    ArrayList<Computer> computers = new ArrayList<Computer>();
+    try {
+      Scanner scanner = new Scanner(file);
+      while (scanner.hasNextLine()) {
+        String data = scanner.nextLine();
+        String[] computerData = data.split(",");
+        Computer computer = new Computer(computerData[0], computerData[1], computerData[2], computerData[3], Double.parseDouble(computerData[4]), Boolean.parseBoolean(computerData[5]));
+        computers.add(computer);
+      }
+      scanner.close();
+    } catch (FileNotFoundException e) {
+      System.out.println("Không tìm thấy file: " + file.getName());
+      e.printStackTrace();
+    }
+    return computers;
+  }
+
+  // phương thức lưu danh sách máy tính vào file
+  public static void addComputersToFile() {
+    try {
+      FileWriter myWriter = new FileWriter(FILE_NAME);
+      for (Computer computer : computerList) {
+        myWriter.write(computer.getCode() + "," + computer.getName() + "," + computer.getManufacturer() + "," + computer.getConfiguration() + "," + computer.getPrice() + "," + computer.isStatus() + "\n");
+      }
+      myWriter.close();
+      System.out.println("Đã lưu danh sách máy tính vào file: " + FILE_NAME);
+    } catch (IOException e) {
+      System.out.println("Lỗi lưu file.");
+      e.printStackTrace();
+    }
+  }
+
+  // phương thức đọc và trả về danh sách máy tính trong file
+  public static ArrayList<Computer> getAllComputerFromFile() {
+    File file = new File(FILE_NAME);
+    ArrayList<Computer> computers = getDataFromFile(file);
+    return computers;
+  }
+
+  // phương thức thêm 1 máy tính vào danh sách
+  public static void addComputerToArray(Computer computer) {
+    computerList.add(computer);
+    System.out.println("Đã thêm máy tính vào danh sách.");
+  }
+}
